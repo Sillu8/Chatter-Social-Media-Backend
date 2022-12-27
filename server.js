@@ -69,7 +69,7 @@ const app = express();
 
 app.use(cors({
     origin: ['https://www.chat.ecart.ltd/','https://chat.ecart.ltd/'],
-    methods: ['GET','POST','PUT','DELETE'],
+    methods: ['GET','POST','PUT','PATCH','DELETE'],
     credentials: true,
     allowedHeaders: ['Content-Type','Access']
 }))
