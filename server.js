@@ -67,7 +67,12 @@ io.on('connection', socket => {
 })
 const app = express();
 
-app.use(cors())
+app.use(cors({
+    origin: ['https://www.chat.ecart.ltd/','https://chat.ecart.ltd/'],
+    methods: ['GET','POST','PUT','DELETE'],
+    credentials: true,
+    allowedHeaders: ['Content-Type','Access']
+}))
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
