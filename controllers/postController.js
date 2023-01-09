@@ -14,15 +14,32 @@ const { default: mongoose } = require("mongoose");
 // @route GET /api/v1/post
 // @access  Private
 const allPosts = asyncHandler(async (req, res) => {
+
     const userId = req.userId;
-    const posts = await Post.find({}).limit(10).sort({ createdAt: "desc" });
-    res.status(200).json({
-        status: 'success',
-        result: posts.length,
-        data: {
-            posts
+
+    const { following } = await User.findById(userId);
+
+    const posts = await Post.find({
+        userID: {
+            $in: [...following, userId]
+        },
+        "report.reportedUserId": {
+            $ne: userId
         }
-    })
+    }).limit(10)
+        .sort({
+            createdAt: "desc"
+        });
+
+
+    res.status(200)
+        .json({
+            status: 'success',
+            result: posts.length,
+            data: {
+                posts
+            }
+        })
 })
 
 
@@ -37,7 +54,7 @@ const newPost = asyncHandler(async (req, res) => {
         const result = await cloudinary.uploader.upload(req.file?.path, { folder: 'posts' });
         const post = await Post.create({
             userID,
-            userName: user.name,
+            userName: user.username,
             userProfilePic: user.profilePic,
             desc,
             tags,
@@ -76,7 +93,7 @@ const userPosts = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ username });
 
-    const posts = await Post.find({userID: user._id}).sort({ createdAt: "desc" });
+    const posts = await Post.find({ userID: user._id }).sort({ createdAt: "desc" });
     res.status(200).json({
         status: 'success',
         result: posts.length,
@@ -321,6 +338,34 @@ const getSinglePost = asyncHandler(async (req, res) => {
 })
 
 
+// @desc Edit Post
+// @route PATCH /api/v1/post/:postId/edit
+// @access  Private
+const editPost = asyncHandler(async (req, res) => {
+    try {
+
+        const { postId } = req.params;
+        const { desc } = req.body;
+
+        const post = await Post.findByIdAndUpdate(postId, {
+            $set: {
+                desc: desc
+            }
+        }, { new: true });
+
+
+        res.status(200).json({
+            status: 'success',
+            post
+        })
+
+    } catch (error) {
+        console.log(error);
+        throw new Error('Unknown error!')
+    }
+})
+
+
 module.exports = {
     allPosts,
     newPost,
@@ -333,4 +378,5 @@ module.exports = {
     reportPost,
     deletePost,
     getSinglePost,
+    editPost
 }

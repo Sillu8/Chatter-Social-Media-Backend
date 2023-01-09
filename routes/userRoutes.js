@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { getUser,
+const {
+    getUser,
     login,
     signup,
     suggestions,
@@ -18,14 +19,18 @@ const { getUser,
     getUnreadNotifications,
     getReadNotifications,
     getUserData,
+    editProfilePic,
+    searchUsers,
 } = require('../controllers/userController');
-
+const upload = require('../utils/multer');
 const protect = require('../middleware/authMiddleware');
 
 
 router.route('/').get(protect, getUser).put(protect, editProfile);
+router.patch('/:userId/profilepic', upload.single('image'), editProfilePic);
 router.post('/signup', signup);
 router.post('/verify', verifyOtp);
+router.get('/search', searchUsers)
 router.post('/login', login);
 router.get('/suggestions', protect, suggestions);
 router.patch('/follow', protect, followUser);
