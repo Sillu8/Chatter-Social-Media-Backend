@@ -21,13 +21,14 @@ connectDB();
 
 app.options('*', cors())
 
-// app.use(cors({
-// origin: ["https://www.chat.ecart.ltd", "https://chat.ecart.ltd"],
-// methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-// credentials: true,
-// allowedHeaders: ['Content-Type', 'Access']
-// }))
+app.use(cors())
 
+// {
+//     origin: ["https://www.chat.ecart.ltd", "https://chat.ecart.ltd","http://localhost:3000"],  //'https://www.chat.ecart.ltd'
+//     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+//     credentials: true,
+//     allowedHeaders: ['Content-Type', 'Access']
+// }
 
 const { createServer } = require('http')
 const httpServer = createServer(app);
